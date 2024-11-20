@@ -206,6 +206,36 @@ data:
         app: {{ "{{" }} zeppelin.k8s.interpreter.pod.name {{ "}}" }}
 
     {% if zeppelin.k8s.interpreter.group.name == "spark" %}
+    ---
+    apiVersion: v1
+    kind: Service
+    metadata:
+      name: {{ "{{" }} zeppelin.k8s.interpreter.setting.name {{ "}}" }}
+      namespace: {{ "{{" }} zeppelin.k8s.interpreter.namespace {{ "}}" }}
+      {% if zeppelin.k8s.server.uid is defined %}
+      ownerReferences:
+      - apiVersion: v1
+        controller: false
+        blockOwnerDeletion: false
+        kind: Pod
+        name: {{ "{{" }} zeppelin.k8s.server.pod.name {{ "}}" }}
+        uid: {{ "{{" }} zeppelin.k8s.server.uid {{ "}}" }}
+      {% endif %}
+    spec:
+      clusterIP: None
+      ports:
+      - name: spark-driver
+        port: 22321
+      - name: spark-blockmanager
+        port: 22322
+      - name: spark-ui
+        port: 4040
+      selector:
+        {{- include "zeppelin.interpreter.labels" . | nindent 8 }}
+        app: {{ "{{" }} zeppelin.k8s.interpreter.pod.name {{ "}}" }}
+    {% endif %}
+
+    {% if zeppelin.k8s.interpreter.group.name == "spark" %}
     {% if zeppelin.k8s.spark.useIngress is defined and zeppelin.k8s.spark.useIngress == "true" %}
     ---
     apiVersion: networking.k8s.io/v1
