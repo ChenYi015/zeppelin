@@ -222,7 +222,6 @@ data:
         uid: {{ "{{" }} zeppelin.k8s.server.uid {{ "}}" }}
       {% endif %}
     spec:
-      clusterIP: None
       ports:
       - name: spark-driver
         port: 22321
